@@ -26,6 +26,9 @@ public class Application extends Controller {
 		public String confPassword;
 
 		public String validate() {
+			if (User.findByLogin(login) != null) {
+				return "Login already in use.";
+			}
 			if (!password.equals(confPassword)) {
 				return "Password not confirmed";
 			}
@@ -35,6 +38,7 @@ public class Application extends Controller {
 	}
 
 	static Form<Login> loginForm = Form.form(Login.class);
+	static Form<Register> registerForm = Form.form(Register.class);
 
 	public static Result index() {
 		return ok(index.render("Your new application is ready."));
@@ -54,8 +58,8 @@ public class Application extends Controller {
 		Login login = filledLoginForm.get();
 		if (!User.authenticate(login.login, login.password)) {
 			filledLoginForm.reject("Wrong login or password."); // setting a
-																	// global
-																	// error
+																// global
+																// error
 			return badRequest(views.html.login.render(filledLoginForm));
 		} else {
 			session("user", login.login);
@@ -65,4 +69,33 @@ public class Application extends Controller {
 
 		}
 	}
+
+	public static Result registerWindow() {
+		session().clear();
+		return ok(views.html.register.render(Form.form(Register.class)));
+	}
+
+	public static Result register() {
+		Form<Register> filledLoginForm = registerForm.bindFromRequest();
+		if (filledLoginForm.hasErrors()) {
+			return badRequest(views.html.register.render(filledLoginForm));
+		}
+		Register registered = filledLoginForm.get();
+		User user = new User();
+		user.login = registered.login;
+		user.password = registered.password;
+		user.save();
+		
+		session("user", user.login);
+		
+		return ok("SUCCESS");
+	}
+	
+	public static Result logout() {
+        session().clear();
+        flash("success", "You have signed out.");
+        return redirect(
+                routes.Application.login()
+        );
+    }
 }

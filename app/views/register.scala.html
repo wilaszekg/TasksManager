@@ -1,6 +1,6 @@
-@(loginform: Form[Application.Login]) @styles = { @loginStyles() }
+@(loginform: Form[Application.Register]) @styles = { @loginStyles() }
 
-@main("Login", styles = styles) {
+@main("Register", styles = styles) {
 
 
 <div class="container">
@@ -8,8 +8,8 @@
 
 	<h1>Welcome to tasks manager</h1>
 	<ul class="nav nav-tabs">
-		<li class="active"><a href="#">Sign in</a></li>
-		<li><a href="@routes.Application.registerWindow()">Register</a></li>
+		<li><a href="@routes.Application.login()">Sign in</a></li>
+		<li class="active"><a href="#">Register</a></li>
 		<li><a href="#">About</a></li>
 	</ul>
 	<div class="row">
@@ -24,20 +24,29 @@
 			</p>
 		</div>
 		<div class="span4">
-			@helper.form(routes.Application.authenticate(), 'class ->
-			"form-signin") {
+			@helper.form(routes.Application.register(), 'class -> "form-signin") {
 			<fieldset>
-				<h2 class="form-signin-heading">Sign in</h2>
-				@if(loginform.hasGlobalErrors) {
-				<div class="alert alert-error">@loginform.globalError.message</div>
+				<h2 class="form-signin-heading">Register</h2>
+				@if(loginform.hasErrors) {
+					<div class="alert alert-error"> 
+					@if(loginform.error("") != null) {
+						@loginform.error("").message
+					}
+					@if(loginform.hasGlobalErrors) {
+						@loginform.globalError.message
+					} else {
+						Registration form incorrect
+					}
+					 </div>
 				} @if(flash.contains("success")) {
 				<div class="alert alert-success">@flash.get("success")</div>
 				} @helper.inputText(loginform("login"), 'class ->
 				"input-block-level", '_label -> "", 'placeholder -> "Login")
 				@helper.inputPassword(loginform("password"), 'class ->
 				"input-block-level", '_label -> "", 'placeholder -> "Password")
-				<button class="btn btn-large btn-primary" type="submit">Sign
-					in</button>
+				@helper.inputPassword(loginform("confPassword"), 'class ->
+				"input-block-level", '_label -> "", 'placeholder -> "Confirm Password")
+				<button class="btn btn-large btn-primary" type="submit">Register</button>
 			</fieldset>
 
 			}
