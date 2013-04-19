@@ -4,6 +4,8 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import play.db.ebean.Model;
 
@@ -16,6 +18,12 @@ public class User extends Model {
 	public String login;
 
 	public String password;
+	
+	@OneToMany(mappedBy="owner")
+	public List<Project> ownedProjects;
+	
+	@ManyToMany
+	public List<Project> projects;
 
 	public static Model.Finder<String, User> find = new Model.Finder<String, User>(
 			String.class, User.class);

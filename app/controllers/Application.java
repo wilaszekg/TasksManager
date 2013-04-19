@@ -1,11 +1,14 @@
 package controllers;
 
 import models.User;
+import play.Logger;
 import play.data.Form;
 import play.data.validation.Constraints.Required;
 import play.mvc.Controller;
 import play.mvc.Result;
-import views.html.index;
+import play.mvc.Security;
+import security.Secured;
+
 
 public class Application extends Controller {
 
@@ -40,8 +43,9 @@ public class Application extends Controller {
 	static Form<Login> loginForm = Form.form(Login.class);
 	static Form<Register> registerForm = Form.form(Register.class);
 
+	@Security.Authenticated(Secured.class)
 	public static Result index() {
-		return ok(index.render("Your new application is ready."));
+		return redirect(routes.Projects.myProjects());
 	}
 
 	public static Result login() {
@@ -65,7 +69,7 @@ public class Application extends Controller {
 			session("user", login.login);
 			// session("role", user.role.name());
 
-			return ok("SUCCESS");
+			return redirect(routes.Projects.myProjects());
 
 		}
 	}
@@ -85,17 +89,24 @@ public class Application extends Controller {
 		user.login = registered.login;
 		user.password = registered.password;
 		user.save();
-		
+
 		session("user", user.login);
-		
-		return ok("SUCCESS");
+
+		return redirect(routes.Projects.myProjects());
 	}
-	
+
 	public static Result logout() {
-        session().clear();
-        flash("success", "You have signed out.");
-        return redirect(
-                routes.Application.login()
-        );
-    }
+		session().clear();
+		flash("success", "You have signed out.");
+		return redirect(routes.Application.login());
+	}
+
+	public static Result tryy(int id) {
+		
+			Logger.debug("path: " + ctx().request().path().toString());
+
+		
+		return ok("id: " + id);
+
+	}
 }

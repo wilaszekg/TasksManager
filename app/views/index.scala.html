@@ -1,7 +1,36 @@
-@(message: String)
+@(active:String)(content: Html)
 
-@main("Welcome to Play 2.1") {
-    
-    @play20.welcome(message, style = "Java")
-    
+@styles = { @mainStyles() }
+
+
+@main("Tasks Manager", styles=styles) {
+
+	<div class="navbar navbar-inverse navbar-fixed-top">
+		<div class="navbar-inner">
+			<div class="container-fluid">
+				<button type="button" class="btn btn-navbar" data-toggle="collapse"
+					data-target=".nav-collapse">
+					<span class="icon-bar"></span> <span class="icon-bar"></span> <span
+						class="icon-bar"></span>
+				</button>
+				<a class="brand" href="#">Tasks Manager</a>
+				<div class="nav-collapse collapse">
+					<p class="navbar-text pull-right">
+						Logged in as @session.get("user") <a href="/logout" class="navbar-link">Logout</a>
+					</p>
+					<ul class="nav">
+						<li class="@if(active.equals("projects")) {active}"> <a href=@routes.Projects.myProjects()> Projects </a> </li>
+            			<li class="@if(active.equals("account")) {active}"> <a href=#> My account </a> </li>
+            			
+					</ul>
+				</div>
+				<!--/.nav-collapse -->
+			</div>
+		</div>
+	</div>
+	<div class="container">
+		@content
+	</div>
+
+
 }
