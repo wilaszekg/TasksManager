@@ -1,0 +1,53 @@
+@(project: Project)
+
+
+
+@projectMain("mileStones", project, scripts = jtableScript) {
+	<div id="MilestonesTableContainer"></div>
+}
+
+@jtableScript = {
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#MilestonesTableContainer').jtable({
+                title: 'Mile Stones',
+                actions: {
+                    listAction: '@routes.MileStones.list(project.id)',
+                    createAction: '@routes.MileStones.create(project.id)',
+                    updateAction: '@routes.MileStones.update(project.id)',
+                    deleteAction: '@routes.MileStones.delete(project.id)'
+                },
+                fields: {
+                    id: {
+                        title: 'Id',
+                        list: false,
+                        key: true
+                    },
+                    name: {
+                        title: 'Mile Stone'
+                    },
+                    creationDate: {
+                        title: 'Created',
+                        create: false,
+                        edit: false
+                    },
+                    dueDate: {
+                        title: 'Due Date',
+                            type: 'date'
+                    },
+                    project: {
+                        title: 'Project',
+                        list: false,
+                        create: false,
+                        edit: false
+                    }
+                }
+            });
+            $('#MilestonesTableContainer').jtable('load');
+        });
+
+
+
+</script>
+
+}

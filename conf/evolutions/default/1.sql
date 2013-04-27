@@ -3,6 +3,15 @@
 
 # --- !Ups
 
+create table mile_stone (
+  id                        bigint auto_increment not null,
+  name                      varchar(255),
+  creation_date             timestamp,
+  due_date                  timestamp,
+  project_id                bigint,
+  constraint pk_mile_stone primary key (id))
+;
+
 create table project (
   id                        bigint not null,
   name                      varchar(255),
@@ -27,8 +36,10 @@ create sequence project_seq;
 
 create sequence user_seq;
 
-alter table project add constraint fk_project_owner_1 foreign key (owner_login) references user (login) on delete restrict on update restrict;
-create index ix_project_owner_1 on project (owner_login);
+alter table mile_stone add constraint fk_mile_stone_project_1 foreign key (project_id) references project (id) on delete restrict on update restrict;
+create index ix_mile_stone_project_1 on mile_stone (project_id);
+alter table project add constraint fk_project_owner_2 foreign key (owner_login) references user (login) on delete restrict on update restrict;
+create index ix_project_owner_2 on project (owner_login);
 
 
 
@@ -39,6 +50,8 @@ alter table user_project add constraint fk_user_project_project_02 foreign key (
 # --- !Downs
 
 SET REFERENTIAL_INTEGRITY FALSE;
+
+drop table if exists mile_stone;
 
 drop table if exists project;
 

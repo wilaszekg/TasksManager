@@ -23,3 +23,5 @@ GET		/try/:id					controllers.Application.tryy(id: Int)
 # Projects
 GET		/projects					controllers.Projects.myProjects()
 POST	/addProject					controllers.Projects.addProject()
+GET		/projects/:id				controllers.Projects.projectMain(id: Int)
+
