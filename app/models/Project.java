@@ -6,6 +6,7 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import play.Logger;
 import play.data.validation.Constraints.Required;
@@ -28,6 +29,8 @@ public class Project extends Model {
 	public User owner;
 	@ManyToMany(mappedBy = "projects")
 	public List<User> users;
+	@OneToMany
+	public List<MileStone> mileStones;
 
 	public static Finder<Long, Project> find = new Finder<Long, Project>(
 			Long.class, Project.class);

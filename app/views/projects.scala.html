@@ -25,7 +25,7 @@
 	</thead>
 	@for(project <- ownedProjects) {
   		<tr>
-  			<td>@project.name</td>
+  			<td><a href="@routes.Projects.projectMain(project.id)">@project.name</a></td>
   			
   			<td>@project.description</td>
   		

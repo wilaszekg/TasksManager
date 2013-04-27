@@ -23,3 +23,11 @@ GET		/try/:id					controllers.Application.tryy(id: Int)
 # Projects
 GET		/projects					controllers.Projects.myProjects()
 POST	/addProject					controllers.Projects.addProject()
+GET		/projects/:id				controllers.Projects.projectMain(id: Long)
+
+# Mile Stones
+GET			/projects/:id/milestones		controllers.Projects.mileStones(id: Long)
+POST		/projects/:id/milestones/list	controllers.MileStones.list(id: Long)
+POST		/projects/:id/milestones/create	controllers.MileStones.create(id: Long)
+POST		/projects/:id/milestones/delete	controllers.MileStones.delete(id: Long)
+POST		/projects/:id/milestones/update	controllers.MileStones.update(id: Long)

@@ -1,9 +1,9 @@
-@(active:String)(content: Html)
+@(active:String, scripts: Html = Html(""))(content: Html)
 
 @styles = { @mainStyles() }
 
 
-@main("Tasks Manager", styles=styles) {
+@main("Tasks Manager", styles=styles, scripts = scripts) {
 
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">

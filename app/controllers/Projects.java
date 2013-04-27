@@ -7,6 +7,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
+import views.html.milestones;
 import views.html.projects;
 
 @Security.Authenticated(Secured.class)
@@ -17,6 +18,10 @@ public class Projects extends Controller {
 	public static Result myProjects(){
 		User user = User.findByLogin(session("user"));
 		return ok(projects.render(Form.form(Project.class), user.ownedProjects));
+	}
+	
+	public static Result mileStones(long projectId) {
+		return ok(milestones.render(Project.findById(projectId)));
 	}
 	
 	public static Result addProject(){
@@ -41,5 +46,9 @@ public class Projects extends Controller {
 		flash("success", "You created a new project: " + project.name);
 		return ok(projects.render(Form.form(Project.class), user.ownedProjects));
 		
+	}
+	
+	public static Result projectMain(long id) {
+		return mileStones(id);
 	}
 }
