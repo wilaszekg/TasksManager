@@ -1,6 +1,9 @@
 package controllers;
 
+import be.objectify.deadbolt.java.actions.Restrict;
+import models.Contributor;
 import models.Project;
+import models.Role;
 import models.User;
 import play.data.Form;
 import play.mvc.Controller;
@@ -17,9 +20,10 @@ public class Projects extends Controller {
 
 	public static Result myProjects(){
 		User user = User.findByLogin(session("user"));
-		return ok(projects.render(Form.form(Project.class), user.ownedProjects));
+		return ok(projects.render(Form.form(Project.class), user.ownedProjects, user.contributedProjects()));
 	}
 	
+	@Restrict("CONTRIBUTOR")
 	public static Result mileStones(long projectId) {
 		return ok(milestones.render(Project.findById(projectId)));
 	}
@@ -32,23 +36,32 @@ public class Projects extends Controller {
 		
 		if(filledForm.hasErrors()){
 			filledForm.reject("The project creating form was not correct.");
-			return badRequest(projects.render(filledForm, user.ownedProjects));
+			return badRequest(projects.render(filledForm, user.ownedProjects, user.contributedProjects()));
 		}
 		Project project = filledForm.get();
 		
 		if(Project.findByName(project.name, user) != null) {
 			filledForm.reject("You already have a project with name " + project.name);
-			return badRequest(projects.render(filledForm, user.ownedProjects));
+			return badRequest(projects.render(filledForm, user.ownedProjects, user.contributedProjects()));
 		}
 		
 		project.owner = user;
 		project.save();
+		
+		Contributor contributor = new Contributor();
+		contributor.role = Role.ADMIN;
+		contributor.user = user;
+		contributor.project = project;
+		contributor.save();
+		
+		
 		flash("success", "You created a new project: " + project.name);
-		return ok(projects.render(Form.form(Project.class), user.ownedProjects));
+		return ok(projects.render(Form.form(Project.class), user.ownedProjects, user.contributedProjects()));
 		
 	}
 	
+	@Restrict("CONTRIBUTOR")
 	public static Result projectMain(long id) {
-		return mileStones(id);
+		return redirect(routes.Projects.mileStones(id));
 	}
 }

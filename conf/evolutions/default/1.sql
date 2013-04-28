@@ -3,6 +3,15 @@
 
 # --- !Ups
 
+create table contributor (
+  id                        bigint auto_increment not null,
+  user_login                varchar(255),
+  project_id                bigint,
+  role                      integer,
+  constraint ck_contributor_role check (role in (0,1)),
+  constraint pk_contributor primary key (id))
+;
+
 create table mile_stone (
   id                        bigint auto_increment not null,
   name                      varchar(255),
@@ -26,36 +35,30 @@ create table user (
   constraint pk_user primary key (login))
 ;
 
-
-create table user_project (
-  user_login                     varchar(255) not null,
-  project_id                     bigint not null,
-  constraint pk_user_project primary key (user_login, project_id))
-;
 create sequence project_seq;
 
 create sequence user_seq;
 
-alter table mile_stone add constraint fk_mile_stone_project_1 foreign key (project_id) references project (id) on delete restrict on update restrict;
-create index ix_mile_stone_project_1 on mile_stone (project_id);
-alter table project add constraint fk_project_owner_2 foreign key (owner_login) references user (login) on delete restrict on update restrict;
-create index ix_project_owner_2 on project (owner_login);
+alter table contributor add constraint fk_contributor_user_1 foreign key (user_login) references user (login) on delete restrict on update restrict;
+create index ix_contributor_user_1 on contributor (user_login);
+alter table contributor add constraint fk_contributor_project_2 foreign key (project_id) references project (id) on delete restrict on update restrict;
+create index ix_contributor_project_2 on contributor (project_id);
+alter table mile_stone add constraint fk_mile_stone_project_3 foreign key (project_id) references project (id) on delete restrict on update restrict;
+create index ix_mile_stone_project_3 on mile_stone (project_id);
+alter table project add constraint fk_project_owner_4 foreign key (owner_login) references user (login) on delete restrict on update restrict;
+create index ix_project_owner_4 on project (owner_login);
 
 
-
-alter table user_project add constraint fk_user_project_user_01 foreign key (user_login) references user (login) on delete restrict on update restrict;
-
-alter table user_project add constraint fk_user_project_project_02 foreign key (project_id) references project (id) on delete restrict on update restrict;
 
 # --- !Downs
 
 SET REFERENTIAL_INTEGRITY FALSE;
 
+drop table if exists contributor;
+
 drop table if exists mile_stone;
 
 drop table if exists project;
-
-drop table if exists user_project;
 
 drop table if exists user;
 

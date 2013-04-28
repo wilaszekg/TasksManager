@@ -13,10 +13,7 @@ import javax.persistence.Transient;
 
 import org.codehaus.jackson.node.ObjectNode;
 
-import com.avaje.ebean.validation.Future;
-
 import play.data.format.Formats;
-import play.data.format.Formatters;
 import play.db.ebean.Model;
 import play.libs.Json;
 

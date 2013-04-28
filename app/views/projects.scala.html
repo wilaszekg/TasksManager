@@ -1,4 +1,4 @@
-@(projectForm: Form[Project], ownedProjects: List[Project])
+@(projectForm: Form[Project], ownedProjects: List[Project], contribProjects: List[Project])
 
 @index("projects") {
 
@@ -16,6 +16,7 @@
 <a href="#myModal" role="button" class="btn btn-primary"
 	data-toggle="modal">Add new project</a>
 
+<h3>Projects created by you</h3>
 <table class="table table-bordered">
 	<thead>
 		<tr>
@@ -32,6 +33,26 @@
   		</tr>
 	} 
 </table>
+
+<h3>Projects you contribute to</h3>
+<table class="table table-bordered">
+	<thead>
+		<tr>
+			<th>name</th>
+			<th>description</th>
+		</tr>
+	</thead>
+	@for(project <- contribProjects) {
+  		<tr>
+  			<td><a href="@routes.Projects.projectMain(project.id)">@project.name</a></td>
+  			
+  			<td>@project.description</td>
+  		
+  		</tr>
+	} 
+</table>
+
+
 
 <div id="myModal" class="modal hide fade" tabindex="-1" role="dialog"
 	aria-labelledby="myModalLabel" aria-hidden="true">

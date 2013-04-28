@@ -1,0 +1,49 @@
+@(project: Project)
+
+
+
+@projectMain("contributors", project, scripts = jtableScript) {
+	<div id="ContributorsTableContainer"></div>
+}
+
+@jtableScript = {
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#ContributorsTableContainer').jtable({
+                title: 'Contributors',
+                actions: {
+                    listAction: '@routes.Contributors.list(project.id)',
+                    createAction: '@routes.Contributors.create(project.id)',
+                    updateAction: '@routes.Contributors.update(project.id)',
+                    deleteAction: '@routes.Contributors.delete(project.id)'
+                },
+                fields: {
+                    id: {
+                        title: 'Id',
+                        list: false,
+                        key: true
+                    },
+                    user: {
+                        title: 'User',
+                        edit: false
+                    },
+                    role: {
+                        title: 'Role',
+                        options: { 'CONTRIBUTOR': 'Contributor', 'ADMIN': 'Administrator' }
+                    },
+                    project: {
+                        title: 'Project',
+                        list: false,
+                        create: false,
+                        edit: false
+                    }
+                }
+            });
+            $('#ContributorsTableContainer').jtable('load');
+        });
+
+
+
+</script>
+
+}

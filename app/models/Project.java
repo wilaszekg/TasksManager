@@ -4,7 +4,6 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -27,8 +26,8 @@ public class Project extends Model {
 	public String description;
 	@ManyToOne
 	public User owner;
-	@ManyToMany(mappedBy = "projects")
-	public List<User> users;
+	@OneToMany(mappedBy="project")
+	public List<Contributor> contributors;
 	@OneToMany
 	public List<MileStone> mileStones;
 

@@ -9,14 +9,18 @@ import models.Project;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import be.objectify.deadbolt.java.actions.Restrict;
+
 import play.Logger;
 import play.data.Form;
-import play.data.format.Formats;
-import play.data.format.Formatters;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
+import play.mvc.Security;
+import security.Secured;
 
+@Security.Authenticated(Secured.class)
+@Restrict("CONTRIBUTOR")
 public class MileStones extends Controller{
 	
 
@@ -28,13 +32,8 @@ public class MileStones extends Controller{
     
     static Form<MileStone> form = Form.form(MileStone.class);
     
-    static {
-    	Formatters.register(Date.class, new Formats.DateFormatter(MileStone.dateFormat));
-    }
     
     public static Result list(long projectId) {
-    	Logger.debug("id: " + projectId);
-    	Logger.debug("project: " + Project.findById(projectId).name);
     	
         //List<MileStone> list = MileStone.all(Project.findById(projectId));
     	List<MileStone> list = Project.findById(projectId).mileStones;
@@ -70,20 +69,20 @@ public class MileStones extends Controller{
 	
 	private static MileStone getMileStoneFromForm() {
         Form<MileStone> filledForm = form.bindFromRequest();
-        MileStone dbServer = filledForm.get();
+        MileStone mileStone = filledForm.get();
 
-        return dbServer;
+        return mileStone;
     }
 	
 	public static Result update(long projectId) {
-		MileStone updatedServer = getMileStoneFromForm();
-        updatedServer.update();
+		MileStone updatedMileStone = getMileStoneFromForm();
+        updatedMileStone.update();
         return ok(getJsonResultOK());
     }
 	
 	public static Result delete(long projectId) {
-		MileStone deletedServer = getMileStoneFromForm();
-        long id = deletedServer.id;
+		MileStone deletedMileSton = getMileStoneFromForm();
+        long id = deletedMileSton.id;
         MileStone.remove(id);
         return ok(getJsonResultOK());
 
