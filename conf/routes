@@ -26,11 +26,11 @@ POST	/addProject					controllers.Projects.addProject()
 GET		/projects/:id				controllers.Projects.projectMain(id: Long)
 
 # Mile Stones
-GET			/projects/:id/milestones		controllers.Projects.mileStones(id: Long)
-POST		/projects/:id/milestones/list	controllers.MileStones.list(id: Long)
-POST		/projects/:id/milestones/create	controllers.MileStones.create(id: Long)
-POST		/projects/:id/milestones/delete	controllers.MileStones.delete(id: Long)
-POST		/projects/:id/milestones/update	controllers.MileStones.update(id: Long)
+GET			/projects/:id/milestones			controllers.Projects.mileStones(id: Long)
+POST		/projects/:id/milestones/list		controllers.MileStones.list(id: Long)
+POST		/projects/:id/milestones/create		controllers.MileStones.create(id: Long)
+POST		/projects/:id/milestones/delete		controllers.MileStones.delete(id: Long)
+POST		/projects/:id/milestones/update		controllers.MileStones.update(id: Long)
 
 # Contributors
 GET			/projects/:id/contributors			controllers.Contributors.contributors(id: Long)
@@ -38,3 +38,12 @@ POST		/projects/:id/contributors/list		controllers.Contributors.list(id: Long)
 POST		/projects/:id/contributors/create	controllers.Contributors.create(id: Long)
 POST		/projects/:id/contributors/delete	controllers.Contributors.delete(id: Long)
 POST		/projects/:id/contributors/update	controllers.Contributors.update(id: Long)
+
+# Tasks
+GET			/projects/:id/tasks					controllers.Tasks.tasks(id: Long)
+POST		/projects/:id/tasks/list			controllers.Tasks.list(id: Long)
+POST		/projects/:id/tasks/create			controllers.Tasks.create(id: Long)
+POST		/projects/:id/tasks/delete			controllers.Tasks.delete(id: Long)
+POST		/projects/:id/tasks/update			controllers.Tasks.update(id: Long)
+POST		/projects/:id/tasks/msOptions		controllers.Tasks.mileStonesOptions(id: Long)
+POST		/projects/:id/tasks/ctrOptions		controllers.Tasks.contributorsOptions(id: Long)

@@ -20,9 +20,6 @@ import be.objectify.deadbolt.java.actions.Restrict;
 @Security.Authenticated(Secured.class)
 public class Contributors extends Controller {
 
-	public static Result contributors(long projectId) {
-		return ok(views.html.contributors.render(Project.findById(projectId)));
-	}
 
 	private static final String JTABLE_RECORDS = "Records";
 	private static final String JTABLE_RECORD = "Record";
@@ -34,12 +31,18 @@ public class Contributors extends Controller {
 
 	static Form<Contributor> form = Form.form(Contributor.class);
 
+	@Restrict("CONTRIBUTOR")
+	public static Result contributors(long projectId) {
+		return ok(views.html.contributors.render(Project.findById(projectId)));
+	}
+
+	@Restrict("CONTRIBUTOR")
 	public static Result list(long projectId) {
 		List<Contributor> list = Project.findById(projectId).contributors;
 		ObjectNode result = getJsonResultOK();
 		ArrayNode records = result.putArray(JTABLE_RECORDS);
-		for (Contributor Contributor : list) {
-			records.add(Contributor.toJsonObject());
+		for (Contributor contributor : list) {
+			records.add(contributor.toJsonObject());
 		}
 		return ok(result);
 	}

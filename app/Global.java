@@ -34,6 +34,24 @@ public class Global extends GlobalSettings {
 			}
 
 		});
+		
+		Formatters.register(MileStone.class, new Formatters.SimpleFormatter<MileStone>() {
+
+			@Override
+			public MileStone parse(String arg0, Locale arg1) throws ParseException {
+				MileStone user = MileStone.findById(Long.parseLong(arg0));
+				if(user == null) {
+					throw new java.text.ParseException("No such MileStone: " + arg0, 0);
+				}
+				return user;
+			}
+
+			@Override
+			public String print(MileStone arg0, Locale arg1) {
+				return arg0.name;
+			}
+
+		});
 
 		Formatters.register(Date.class, new Formats.DateFormatter(
 				MileStone.dateFormat));

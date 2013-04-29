@@ -6,8 +6,11 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import org.codehaus.jackson.node.ObjectNode;
+
 import play.Logger;
 import play.db.ebean.Model;
+import play.libs.Json;
 
 @Entity
 public class User extends Model {
@@ -100,5 +103,13 @@ public class User extends Model {
 			return list.get(0);
 		}
 	}
+	
+	public ObjectNode asJsonOption(){
+        ObjectNode node = Json.newObject();
+        node.put("Value", login);
+        // TODO: add extra info in DisplayText
+        node.put("DisplayText", login);
+        return node;
+    }
 
 }

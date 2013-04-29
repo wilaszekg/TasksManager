@@ -28,8 +28,10 @@ public class Project extends Model {
 	public User owner;
 	@OneToMany(mappedBy="project")
 	public List<Contributor> contributors;
-	@OneToMany
+	@OneToMany(mappedBy="project")
 	public List<MileStone> mileStones;
+	@OneToMany(mappedBy="project")
+	public List<Task> tasks;
 
 	public static Finder<Long, Project> find = new Finder<Long, Project>(
 			Long.class, Project.class);
@@ -48,6 +50,10 @@ public class Project extends Model {
 
 	public static Project findById(Long id) {
 		return find.byId(id);
+	}
+	
+	public List<Task> allTasks() {
+		return Task.find.where().eq("mileStone.project", this).findList();
 	}
 
 	public static Project findByName(String name, User user) {

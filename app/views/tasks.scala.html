@@ -1,0 +1,77 @@
+@(project: Project)
+
+
+
+@projectMain("tasks", project, scripts = jtableScript) {
+	<div id="TasksTableContainer"></div>
+}
+
+@jtableScript = {
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#TasksTableContainer').jtable({
+                title: 'Tasks',
+                actions: {
+                    listAction: '@routes.Tasks.list(project.id)',
+                    createAction: '@routes.Tasks.create(project.id)',
+                    updateAction: '@routes.Tasks.update(project.id)',
+                    deleteAction: '@routes.Tasks.delete(project.id)'
+                },
+                fields: {
+                    id: {
+                        title: 'Id',
+                        list: false,
+                        key: true
+                    },
+                    name: {
+                        title: 'Title'
+                    },
+                    description: {
+                        title: 'Description'
+                    },
+                    priority: {
+                        title: 'Priority',
+                        options: [ 'HIGHEST', 'HIGH', 'MEDIUM', 'LOW', 'LOWEST' ]
+                    },
+                    taskKind: {
+                        title: 'Kind of task',
+                        options: [ 'TASK', 'DEFECT', 'ENHENCEMENT', 'DOCUMENTATION', 'CONFIGURATION', 'QUESTION' ]
+                    },
+                    creationDate: {
+                        title: 'Created',
+                        create: false,
+                        edit: false
+                    },
+                    dueDate: {
+                        title: 'Due date',
+                        type: 'date'
+                    },
+                    mileStone: {
+                        title: 'Mile Stone',
+                        options: '@routes.Tasks.mileStonesOptions(project.id)'
+                    },
+                    creator: {
+                        title: 'Created by',
+                        create: false,
+                        edit: false
+                    },
+                    assignee: {
+                        title: 'Assigned to',
+                        options: '@routes.Tasks.contributorsOptions(project.id)'
+                    },
+                    project: {
+                        title: 'Project',
+                        create: false,
+                        edit: false,
+                        list: false
+                    }
+                }
+            });
+            $('#TasksTableContainer').jtable('load');
+        });
+
+
+
+</script>
+
+}

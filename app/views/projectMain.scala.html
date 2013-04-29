@@ -6,7 +6,7 @@
 <div class="pagination pagination-large" style="-webkit-border-radius: 15; -moz-border-radius: 15; border-radius: 15;">
 	
    	<ul>
-      <li class="@if(active.equals("tasks")) {active}"><a href="#">Tasks</a></li>
+      <li class="@if(active.equals("tasks")) {active}"><a href="@routes.Tasks.tasks(project.id)">Tasks</a></li>
       <li class="@if(active.equals("mileStones")) {active}"><a href="@routes.Projects.mileStones(project.id)">Mile Stones</a></li>
       <li class="@if(active.equals("contributors")) {active}"><a href="@routes.Contributors.contributors(project.id)">Contributors</a></li>
       <li class="@if(active.equals("graphs")) {active}"><a href="#">Graphs</a></li>

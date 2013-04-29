@@ -9,6 +9,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import org.codehaus.jackson.node.ObjectNode;
@@ -34,6 +35,8 @@ public class MileStone extends Model {
 	public Date dueDate;
 	@ManyToOne
 	public Project project;
+	@OneToMany(mappedBy="mileStone")
+	List<Task> tasks;
 	
 	
 	@Transient
@@ -88,4 +91,11 @@ public class MileStone extends Model {
 		node.put(MSTONE_PROJECT, project.id);
 		return node;
 	}
+	
+	public ObjectNode asJsonOption(){
+        ObjectNode node = Json.newObject();
+        node.put("Value", id);
+        node.put("DisplayText", name);
+        return node;
+    }
 }
