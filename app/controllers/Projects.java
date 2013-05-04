@@ -62,6 +62,6 @@ public class Projects extends Controller {
 	
 	@Restrict("CONTRIBUTOR")
 	public static Result projectMain(long id) {
-		return redirect(routes.Projects.mileStones(id));
+		return redirect(routes.Tasks.tasks(id));
 	}
 }

@@ -7,11 +7,13 @@ import models.Contributor;
 import models.MileStone;
 import models.Project;
 import models.Task;
+import models.TaskStatus;
 import models.User;
 
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import play.data.DynamicForm;
 import play.data.Form;
 import play.libs.Json;
 import play.mvc.Controller;
@@ -22,7 +24,7 @@ import be.objectify.deadbolt.java.actions.Restrict;
 
 @Security.Authenticated(Secured.class)
 @Restrict("CONTRIBUTOR")
-public class Tasks extends Controller{
+public class Tasks extends Controller {
 
 	private static final String JTABLE_RECORDS = "Records";
 	private static final String JTABLE_RECORD = "Record";
@@ -39,7 +41,13 @@ public class Tasks extends Controller{
 	}
 
 	public static Result list(long projectId) {
-		List<Task> list = Project.findById(projectId).tasks;
+		DynamicForm form = Form.form().bindFromRequest();
+
+		List<Task> list = Project.findById(projectId).allTasks(
+				form.get("mileStoneId"), form.get("statusId"),
+				form.get("contributorId"), form.get("priorityId"),
+				form.get("taskTypeId"), form.get("creatorId"),
+				form.get("jtSorting"));
 		ObjectNode result = getJsonResultOK();
 		ArrayNode records = result.putArray(JTABLE_RECORDS);
 		for (Task task : list) {
@@ -63,9 +71,9 @@ public class Tasks extends Controller{
 
 	public static Result create(long projectId) {
 		Form<Task> filledForm = form.bindFromRequest();
-		if(filledForm.hasErrors()) {
+		if (filledForm.hasErrors()) {
 			ObjectNode result = null;
-			if(filledForm.errors().containsKey("user")) {
+			if (filledForm.errors().containsKey("user")) {
 				result = getJsonResultERROR("No such user in the system.");
 			} else {
 				result = getJsonResultERROR("Unexpected error.");
@@ -73,20 +81,25 @@ public class Tasks extends Controller{
 			return ok(result);
 		}
 		Task newTask = filledForm.get();
-		
+
 		Project project = Project.findById(projectId);
-		
+
 		newTask.project = project;
 		newTask.creationDate = new Date();
 		newTask.creator = User.findByLogin(session("user"));
+		newTask.taskStatus = TaskStatus.OPENED;
+
+		if (newTask.dueDate == null) {
+			if (newTask.mileStone != null) {
+				newTask.dueDate = newTask.mileStone.dueDate;
+			}
+		}
 
 		newTask.save();
 		ObjectNode result = getJsonResultOK();
 		result.put(JTABLE_RECORD, newTask.toJsonObject());
 
 		return ok(result);
-
-		
 
 	}
 
@@ -106,40 +119,40 @@ public class Tasks extends Controller{
 	public static Result delete(long projectId) {
 		Task deletedTask = getTaskFromForm();
 		long id = deletedTask.id;
-		Contributor.remove(id);
+		Task.remove(id);
 		return ok(getJsonResultOK());
 
 	}
-	
+
 	public static Result mileStonesOptions(long projectId) {
-        ObjectNode result = getJsonResultOK();
-        ArrayNode options = result.putArray(JTABLE_OPTIONS);
-        
-        ObjectNode nodeUnassigned = Json.newObject();
-        nodeUnassigned.put("Value", "");
-        nodeUnassigned.put("DisplayText", "");
-        
-        options.add(nodeUnassigned);
-        
-        for (MileStone type : Project.findById(projectId).mileStones) {
-            options.add(type.asJsonOption());
-        }
-        return ok(result);
-    }
-	
+		ObjectNode result = getJsonResultOK();
+		ArrayNode options = result.putArray(JTABLE_OPTIONS);
+
+		ObjectNode nodeUnassigned = Json.newObject();
+		nodeUnassigned.put("Value", "");
+		nodeUnassigned.put("DisplayText", "");
+
+		options.add(nodeUnassigned);
+
+		for (MileStone type : Project.findById(projectId).mileStones) {
+			options.add(type.asJsonOption());
+		}
+		return ok(result);
+	}
+
 	public static Result contributorsOptions(long projectId) {
-        ObjectNode result = getJsonResultOK();
-        ArrayNode options = result.putArray(JTABLE_OPTIONS);
-        
-        ObjectNode nodeUnassigned = Json.newObject();
-        nodeUnassigned.put("Value", "");
-        nodeUnassigned.put("DisplayText", "");
-        
-        options.add(nodeUnassigned);
-        
-        for (Contributor contributor : Project.findById(projectId).contributors) {
-            options.add(contributor.user.asJsonOption());
-        }
-        return ok(result);
-    }
+		ObjectNode result = getJsonResultOK();
+		ArrayNode options = result.putArray(JTABLE_OPTIONS);
+
+		ObjectNode nodeUnassigned = Json.newObject();
+		nodeUnassigned.put("Value", "");
+		nodeUnassigned.put("DisplayText", "");
+
+		options.add(nodeUnassigned);
+
+		for (Contributor contributor : Project.findById(projectId).contributors) {
+			options.add(contributor.user.asJsonOption());
+		}
+		return ok(result);
+	}
 }

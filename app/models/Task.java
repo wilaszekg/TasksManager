@@ -14,6 +14,8 @@ import javax.persistence.Transient;
 
 import org.codehaus.jackson.node.ObjectNode;
 
+import com.avaje.ebean.validation.NotNull;
+
 import play.data.format.Formats;
 import play.db.ebean.Model;
 import play.libs.Json;
@@ -43,6 +45,9 @@ public class Task extends Model {
 	public MileStone mileStone;
 	@ManyToOne
 	public Project project;
+	@Enumerated
+	@NotNull
+	public TaskStatus taskStatus;
 
 	@Transient
 	public static final String TASK_ID = "id";
@@ -66,6 +71,8 @@ public class Task extends Model {
 	public static final String TASK_ASSIGNEE = "assignee";
 	@Transient
 	public static final String TASK_PROJECT = "project";
+	@Transient
+	public static final String TASK_STATUS = "taskStatus";
 
 	public static Finder<Long, Task> find = new Finder<Long, Task>(Long.class,
 			Task.class);
@@ -107,6 +114,7 @@ public class Task extends Model {
 		
 		node.put(TASK_CREATOR, creator == null ? "" : creator.login);
 		node.put(TASK_ASSIGNEE, assignee == null ? "" : assignee.login);
+		node.put(TASK_STATUS, taskStatus.name());
 		
 		return node;
 	}

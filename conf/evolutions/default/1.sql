@@ -41,8 +41,10 @@ create table task (
   assignee_login            varchar(255),
   mile_stone_id             bigint,
   project_id                bigint,
+  task_status               integer not null,
   constraint ck_task_priority check (priority in (0,1,2,3,4)),
   constraint ck_task_task_kind check (task_kind in (0,1,2,3,4,5)),
+  constraint ck_task_task_status check (task_status in (0,1)),
   constraint pk_task primary key (id))
 ;
 

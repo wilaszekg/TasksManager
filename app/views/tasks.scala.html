@@ -3,6 +3,55 @@
 
 
 @projectMain("tasks", project, scripts = jtableScript) {
+
+	<center>
+	<div class="filtering">
+    <form>
+        <select id="mileStoneId" name="mileStoneId">
+            <option selected="selected" value="">All mile stones</option>
+	        @for(mileStone <- project.mileStones) {
+	  			<option value="@mileStone.id">@mileStone.name</option>
+			}
+        </select>
+        <select id="statusId" name="statusId">
+            <option value="">All statuses</option>
+            <option value="OPENED">Opened</option>
+            <option value="CLOSED">Closed</option>
+        </select>
+        </select>
+        <select id="priorityId" name="priorityId">
+            <option value="">All priority levels</option>
+            <option value="HIGHEST">Highest</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+            <option value="LOW">Low</option>
+            <option value="LOWEST">Lowest</option>
+        </select>
+        <select id="taskTypeId" name="taskTypeId">
+            <option value="">All types</option>
+            <option value="TASK">Task</option>
+            <option value="DEFECT">Defect</option>
+            <option value="ENHENCEMENT">Enhencement</option>
+            <option value="DOCUMENTATION">Documentation</option>
+            <option value="CONFIGURATION">Configuration</option>
+            <option value="QUESTION">Question</option>
+        </select>
+        <select id="contributorId" name="contributorId">
+            <option selected="selected" value="">Assigned to anybody</option>
+	        @for(contributor <- project.contributors) {
+	  			<option value="@contributor.user.login">@contributor.user.login</option>
+			}
+        </select>
+        <select id="creatorId" name="creatorId">
+            <option selected="selected" value="">Created by anybody</option>
+	        @for(contributor <- project.contributors) {
+	  			<option value="@contributor.user.login">@contributor.user.login</option>
+			}
+        </select>
+        <button class = "btn btn-success" type="submit" id="LoadRecordsButton">Load records</button>
+    </form>
+	</div>
+	</center>
 	<div id="TasksTableContainer"></div>
 }
 
@@ -11,6 +60,8 @@
         $(document).ready(function () {
             $('#TasksTableContainer').jtable({
                 title: 'Tasks',
+                sorting: true,
+                defaultSorting: 'creationDate ASC',
                 actions: {
                     listAction: '@routes.Tasks.list(project.id)',
                     createAction: '@routes.Tasks.create(project.id)',
@@ -24,27 +75,72 @@
                         key: true
                     },
                     name: {
-                        title: 'Title'
+                        title: 'Title',
+                        width: '20%'
                     },
                     description: {
-                        title: 'Description'
+                        title: 'Description',
+                        type: 'textarea',
+                        list: false
                     },
                     priority: {
                         title: 'Priority',
+                        width: '7%',
+                        display: function (data) {
+                        	var ops = { 'HIGHEST':'<span class="badge badge-inverse">Highest</span>',
+                        			'HIGH':'<span class="badge badge-important">High</span>',
+                        			'MEDIUM':'<span class="badge badge-warning">Medium</span>',
+                        			'LOW':'<span class="badge badge-info">Low</span>',
+                        			'LOWEST':'<span class="badge badge-success">Lowest</span>' };
+                            return ops[data.record.priority];
+                        },
                         options: [ 'HIGHEST', 'HIGH', 'MEDIUM', 'LOW', 'LOWEST' ]
                     },
                     taskKind: {
                         title: 'Kind of task',
+                        display: function (data) {
+                        	var ops = { 'TASK':'<i class="icon-tasks"></i> Task',
+                        			'DEFECT':'<i class="icon-thumbs-down"></i> Defect',
+                        			'ENHENCEMENT':'<i class="icon-repeat"></i> Enhencement',
+                        			'DOCUMENTATION':'<i class="icon-book"></i> Documentation',
+                        			'CONFIGURATION':'<i class="icon-wrench"></i> Configuration',
+                        			'QUESTION':'<i class="icon-question-sign"></i> Question',
+                        			};
+                            return ops[data.record.taskKind];
+                        },
                         options: [ 'TASK', 'DEFECT', 'ENHENCEMENT', 'DOCUMENTATION', 'CONFIGURATION', 'QUESTION' ]
                     },
                     creationDate: {
                         title: 'Created',
+                        type: 'date',
                         create: false,
                         edit: false
                     },
                     dueDate: {
                         title: 'Due date',
-                        type: 'date'
+                        type: 'date',
+                        display: function (data) {
+                        	var today = new Date();
+                        	var due = new Date(data.record.dueDate);
+                        	
+                        	// the string may look like: /Date(1367445600000)/
+                        	var parts = data.record.dueDate.split('(');
+                        	
+                        	if(parts.length > 1) {
+                        		var milis = parts[1].split(')')[0];
+                        		var parsedDate = new Date(new Number(milis));
+                        		var due = parsedDate;
+                        		var displayDate = parsedDate.getFullYear() + '-' + (parsedDate.getMonth() + 1) + '-' + parsedDate.getDate();
+                        	} else {
+                        		var displayDate = data.record.dueDate;
+                        	}
+                        	
+                        	if(due < today &&  data.record.taskStatus == 'OPENED') {
+                            	return '<span class="label label-important"><i class="icon-exclamation-sign icon-white"></i> ' + displayDate + '</span>';
+                        	} else {
+                        		return displayDate;
+                        	}
+                        }
                     },
                     mileStone: {
                         title: 'Mile Stone',
@@ -59,6 +155,19 @@
                         title: 'Assigned to',
                         options: '@routes.Tasks.contributorsOptions(project.id)'
                     },
+                    taskStatus: {
+                        title: 'Status',
+                        create: false,
+                        width: '5%',
+                        display: function (data) {
+                        	var ops = {
+                        			'OPENED' : '<span class="badge badge-info"><i class="icon-eye-open"></i></span>',
+                        			'CLOSED' : '<span class="badge badge-important"><i class="icon-eye-close"></i></span>',
+                        	};
+                        	return ops[data.record.taskStatus];
+                        },
+                        options: ['OPENED', 'CLOSED']
+                    },
                     project: {
                         title: 'Project',
                         create: false,
@@ -67,7 +176,23 @@
                     }
                 }
             });
-            $('#TasksTableContainer').jtable('load');
+            //$('#TasksTableContainer').jtable('load');
+            
+          	//Re-load records when user click 'load records' button.
+            $('#LoadRecordsButton').click(function (e) {
+                e.preventDefault();
+                $('#TasksTableContainer').jtable('load', {
+                	mileStoneId: $('#mileStoneId').val(),
+                	statusId: $('#statusId').val(),
+                	contributorId: $('#contributorId').val(),
+                	priorityId: $('#priorityId').val(),
+                	taskTypeId: $('#taskTypeId').val(),
+                	creatorId: $('#creatorId').val()
+                });
+            });
+     
+            //Load all records when page is first shown
+            $('#LoadRecordsButton').click();
         });
 
 
