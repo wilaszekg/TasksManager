@@ -29,6 +29,7 @@ public class Task extends Model {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long id;
+	public long taskNumber;
 	public String name;
 	public String description;
 	@Enumerated
@@ -73,6 +74,8 @@ public class Task extends Model {
 	public static final String TASK_PROJECT = "project";
 	@Transient
 	public static final String TASK_STATUS = "taskStatus";
+	@Transient
+	public static final String TASK_NUMBER= "taskNumber";
 
 	public static Finder<Long, Task> find = new Finder<Long, Task>(Long.class,
 			Task.class);
@@ -91,6 +94,19 @@ public class Task extends Model {
 
 	public static Task findById(Long id) {
 		return find.byId(id);
+	}
+	
+	public static Task findByTaskNumber(long projectId, long taskNumber) {
+		return find.where().eq("project.id", projectId).eq("taskNumber", taskNumber).findUnique();
+	}
+	
+	public void prepereTaskNumber() {
+		List<Task> tasks = find.where().setOrderBy("taskNumber DESC").findList();
+		if(tasks.size() > 0) {
+			taskNumber = tasks.get(0).taskNumber + 1;
+		} else {
+			taskNumber = 1;
+		}
 	}
 
 	public ObjectNode toJsonObject() {
@@ -115,6 +131,7 @@ public class Task extends Model {
 		node.put(TASK_CREATOR, creator == null ? "" : creator.login);
 		node.put(TASK_ASSIGNEE, assignee == null ? "" : assignee.login);
 		node.put(TASK_STATUS, taskStatus.name());
+		node.put(TASK_NUMBER, taskNumber);
 		
 		return node;
 	}

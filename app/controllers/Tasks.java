@@ -88,6 +88,7 @@ public class Tasks extends Controller {
 		newTask.creationDate = new Date();
 		newTask.creator = User.findByLogin(session("user"));
 		newTask.taskStatus = TaskStatus.OPENED;
+		newTask.prepereTaskNumber();
 
 		if (newTask.dueDate == null) {
 			if (newTask.mileStone != null) {
@@ -154,5 +155,13 @@ public class Tasks extends Controller {
 			options.add(contributor.user.asJsonOption());
 		}
 		return ok(result);
+	}
+	
+	public static Result taskSite(long projectId, long taskId) {
+		Task task = Task.findByTaskNumber(projectId, taskId);
+		if(task == null) {
+			return badRequest("Page not found");
+		}
+		return ok(views.html.taskSite.render(task));
 	}
 }

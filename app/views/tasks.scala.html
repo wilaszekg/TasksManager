@@ -74,9 +74,17 @@
                         list: false,
                         key: true
                     },
+                    taskNumber: {
+                    	title: 'Nr',
+                    	create: false,
+                    	edit: false
+                    },
                     name: {
                         title: 'Title',
-                        width: '20%'
+                        display: function (data) {
+                        	return '<a href="' + '@routes.Tasks.tasks(project.id)' + '/' + data.record.taskNumber + '">' + data.record.name + '</a>';
+                        	
+                        }
                     },
                     description: {
                         title: 'Description',

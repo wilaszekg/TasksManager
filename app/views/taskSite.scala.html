@@ -1,0 +1,31 @@
+@(task: Task)
+
+@index("Tasks Manager") {
+
+<ul class="pager">
+    <li class="previous">
+    	<a href="@routes.Tasks.tasks(task.project.id)">&larr; Back to project</a>
+    </li>
+</ul>
+    
+<h3>[@task.taskNumber] @task.name</h3>
+
+<h5>Description: @task.description</h5>
+<h5>Priority: @task.priority</h5>
+<h5>Type of task: @task.taskKind</h5>
+<h5>Created: @task.creationDate</h5>
+<h5>Due date: @task.dueDate</h5>
+<h5>Created by: @task.creator.login</h5>
+<h5>Assigned to: @if(task.assignee != null) { @task.assignee.login } else {-}</h5>
+@if(task.mileStone != null) { <h5>Mile stone: @task.mileStone.name</h5> }
+<h5>Status: @task.taskStatus</h5>
+@if(task.taskStatus == TaskStatus.OPENED) {
+	<a class="btn btn-success btn-large">
+		Close
+	</a>
+} else {
+	<a class="btn btn-danger btn-large">
+		Reopen
+	</a>
+}
+}

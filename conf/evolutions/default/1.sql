@@ -31,6 +31,7 @@ create table project (
 
 create table task (
   id                        bigint auto_increment not null,
+  task_number               bigint,
   name                      varchar(255),
   description               varchar(255),
   priority                  integer,

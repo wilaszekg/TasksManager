@@ -47,3 +47,7 @@ POST		/projects/:id/tasks/delete			controllers.Tasks.delete(id: Long)
 POST		/projects/:id/tasks/update			controllers.Tasks.update(id: Long)
 POST		/projects/:id/tasks/msOptions		controllers.Tasks.mileStonesOptions(id: Long)
 POST		/projects/:id/tasks/ctrOptions		controllers.Tasks.contributorsOptions(id: Long)
+
+# Task
+GET			/projects/:id/tasks/:tid			controllers.Tasks.taskSite(id: Long, tid: Long)
+
