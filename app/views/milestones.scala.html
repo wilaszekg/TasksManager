@@ -24,10 +24,20 @@
                         key: true
                     },
                     name: {
-                        title: 'Mile Stone'
+                        title: 'Mile Stone',
+                        display: function (data) {
+                        	return '<a href="' + '@routes.Projects.mileStones(project.id)' + '/' + data.record.id + '">' + data.record.name + '</a>';
+                        	
+                        }
+                    },
+                    description: {
+                    	title: 'Description',
+                    	list: false,
+                    	type: 'textarea'
                     },
                     creationDate: {
                         title: 'Created',
+                        type: 'date',
                         create: false,
                         edit: false
                     },
@@ -35,11 +45,45 @@
                         title: 'Due Date',
                             type: 'date'
                     },
+                    tasksOpened: {
+                        title: 'Opened',
+                        edit: false,
+                        create: false
+                    },
+                    tasksClosed: {
+                        title: 'Closed',
+                        edit: false,
+                        create: false
+                    },
                     project: {
                         title: 'Project',
                         list: false,
                         create: false,
                         edit: false
+                    },
+                    progress: {
+                    	display: function (data) {
+                    		var opened = data.record.tasksOpened;
+                    		var closed = data.record.tasksClosed;
+                    		var today = new Date();
+                    		var due = new Date(data.record.dueDate);
+                    		if(opened != 0 || closed != 0) {
+                        		var percentage = Math.round ( (closed * 100) / (opened + closed) );
+                    		}
+                        	if(closed == 0) {
+                        		var percentage = 0;
+                        	}
+                        	var progrClass = "progress progress-info";
+                        	if(due < today) {
+                        		if(opened > 0)
+                        			var progrClass = "progress progress-danger";
+                        		else
+                        			var progrClass = "progress progress-success";
+                        	}
+                        	return '<div class="' + progrClass + '"><div class="bar" style="width: ' + percentage +'%"></div></div>'
+                        },
+                    	create: false,
+                    	edit: false
                     }
                 }
             });

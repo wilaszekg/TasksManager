@@ -5,21 +5,25 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.codehaus.jackson.node.ObjectNode;
+
+import com.avaje.ebean.annotation.Encrypted;
 
 import play.Logger;
 import play.db.ebean.Model;
 import play.libs.Json;
 
 @Entity
+@Table(name="appUser")								// "user" is invalid in PostrgeSQL
 public class User extends Model {
 
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	public String login;
-
+	@Encrypted(dbEncryption=false)
 	public String password;
 
 	@OneToMany(mappedBy = "owner")

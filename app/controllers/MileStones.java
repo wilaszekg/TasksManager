@@ -18,6 +18,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
+import views.html.milestoneSite;
 
 @Security.Authenticated(Secured.class)
 @Restrict("CONTRIBUTOR")
@@ -87,4 +88,13 @@ public class MileStones extends Controller{
         return ok(getJsonResultOK());
 
     }
+	
+	public static Result mileStoneSite(long projectId, long mileStoneId) {
+		MileStone mileStone = MileStone.findById(mileStoneId);
+		if(mileStone.project.id != projectId) {
+			return forbidden("This mile stone is not a part of of this project.");
+		} else {
+			return ok(milestoneSite.render(mileStone));
+		}
+	}
 }

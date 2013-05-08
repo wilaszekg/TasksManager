@@ -1,0 +1,27 @@
+@(milestone: MileStone)
+
+@index("Tasks Manager") {
+
+<ul class="pager">
+    <li class="previous">
+    	<a href="@routes.Tasks.tasks(milestone.project.id)">&larr; Back to project</a>
+    </li>
+</ul>
+    
+
+
+<div class="page-header">
+    <h3><small>mile stone: </small>@milestone.name</h3>
+</div>
+
+<h5>Created: @milestone.creationDate</h5>
+<h5>Due date: @milestone.dueDate</h5>
+
+<hr>
+
+@for(line <- milestone.description.split("\n")) {
+	<p>@line</p>
+}
+
+<hr>
+}

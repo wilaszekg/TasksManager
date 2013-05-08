@@ -50,4 +50,10 @@ POST		/projects/:id/tasks/ctrOptions		controllers.Tasks.contributorsOptions(id: 
 
 # Task
 GET			/projects/:id/tasks/:tid			controllers.Tasks.taskSite(id: Long, tid: Long)
+GET			/projects/:id/tasks/:tid/close		controllers.Tasks.closeTask(id: Long, tid: Long)
+GET			/projects/:id/tasks/:tid/reopen		controllers.Tasks.reopenTask(id: Long, tid: Long)
+POST		/projects/:id/tasks/:tid/comment	controllers.Tasks.commentTask(id: Long, tid: Long)
+
+# Mile Stone
+GET			/projects/:id/milestones/:mid		controllers.MileStones.mileStoneSite(id: Long, mid: Long)
 

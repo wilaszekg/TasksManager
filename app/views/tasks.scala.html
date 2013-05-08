@@ -128,6 +128,9 @@
                         title: 'Due date',
                         type: 'date',
                         display: function (data) {
+                        	if(data.record.dueDate == null) {
+                        		return "";
+                        	}
                         	var today = new Date();
                         	var due = new Date(data.record.dueDate);
                         	

@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import models.Contributor;
+import models.HistoryEvent;
 import models.MileStone;
 import models.Project;
 import models.Task;
@@ -15,6 +16,7 @@ import org.codehaus.jackson.node.ObjectNode;
 
 import play.data.DynamicForm;
 import play.data.Form;
+import play.db.ebean.Transactional;
 import play.libs.Json;
 import play.mvc.Controller;
 import play.mvc.Result;
@@ -156,12 +158,83 @@ public class Tasks extends Controller {
 		}
 		return ok(result);
 	}
-	
+
 	public static Result taskSite(long projectId, long taskId) {
 		Task task = Task.findByTaskNumber(projectId, taskId);
-		if(task == null) {
+		if(task.project.id != projectId) {
+			return forbidden("This task does not belong to this project.");
+		}
+		if (task == null) {
 			return badRequest("Page not found");
 		}
 		return ok(views.html.taskSite.render(task));
+	}
+
+	@Transactional
+	public static Result closeTask(long projectId, long taskId) {
+		Task task = Task.findByTaskNumber(projectId, taskId);
+		if(task.project.id != projectId) {
+			return forbidden("This task does not belong to this project.");
+		}
+		if(task.taskStatus == TaskStatus.CLOSED) {
+			return ok(views.html.taskSite.render(task));
+		}
+		HistoryEvent historyEvent = newHistoryEvent(task);
+		historyEvent.changeTo = TaskStatus.CLOSED;
+		
+		historyEvent.save();
+		
+		task.taskStatus = TaskStatus.CLOSED;
+		task.update();
+		
+		return ok(views.html.taskSite.render(task));
+	}
+
+	@Transactional
+	public static Result reopenTask(long projectId, long taskId) {
+		Task task = Task.findByTaskNumber(projectId, taskId);
+		if(task.project.id != projectId) {
+			return forbidden("This task does not belong to this project.");
+		}
+		if(task.taskStatus == TaskStatus.OPENED) {
+			return ok(views.html.taskSite.render(task));
+		}
+		HistoryEvent historyEvent = newHistoryEvent(task);
+		historyEvent.changeTo = TaskStatus.OPENED;
+		
+		historyEvent.save();
+		
+		task.taskStatus = TaskStatus.OPENED;
+		task.update();
+		
+		return ok(views.html.taskSite.render(task));
+	}
+
+	public static Result commentTask(long projectId, long taskId) {
+		Task task = Task.findByTaskNumber(projectId, taskId);
+		DynamicForm commentForm = Form.form().bindFromRequest();
+		String comment = commentForm.get("comment");
+		if(comment == null || comment.trim().equals("")) {
+			// TODO: intorm about reject
+			return badRequest(views.html.taskSite.render(task));
+		}
+		if(task.project.id != projectId) {
+			return forbidden("This task does not belong to this project.");
+		}
+		HistoryEvent historyEvent = newHistoryEvent(task);
+		historyEvent.comment = comment;
+		
+		historyEvent.save();
+		
+		return ok(views.html.taskSite.render(task));
+	}
+	
+	private static HistoryEvent newHistoryEvent(Task task) {
+		HistoryEvent historyEvent = new HistoryEvent();
+		historyEvent.user = User.findByLogin(session("user"));
+		historyEvent.date = new Date();
+		historyEvent.task = task;
+		
+		return historyEvent;
 	}
 }

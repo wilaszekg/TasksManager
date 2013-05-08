@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,6 +32,8 @@ public class MileStone extends Model {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long id;
 	public String name;
+	@Column(columnDefinition="TEXT")
+	public String description;
 	public Date creationDate;
 	public Date dueDate;
 	@ManyToOne
@@ -49,6 +52,12 @@ public class MileStone extends Model {
 	public static final String MSTONE_DUE = "dueDate";
 	@Transient
 	public static final String MSTONE_PROJECT = "project";
+	@Transient
+	public static final String MSTONE_DESCR = "description";
+	@Transient
+	public static final String TASKS_OPENED = "tasksOpened";
+	@Transient
+	public static final String TASKS_CLOSED = "tasksClosed";
 
 	public static Finder<Long, MileStone> find = new Finder<Long, MileStone>(
 			Long.class, MileStone.class);
@@ -72,6 +81,18 @@ public class MileStone extends Model {
 	public static List<MileStone> all(Project project) {
 		return find.where().eq("project", project).findList();
 	}
+	
+	public int openedTasksCount() {
+		return tasksCount(TaskStatus.OPENED);
+	}
+	
+	public int closedTasksCount() {
+		return tasksCount(TaskStatus.CLOSED);
+	}
+	
+	public int tasksCount(TaskStatus status) {
+		return Task.find.where().eq("mileStone", this).eq("taskStatus", status).findRowCount();
+	}
 
 	public ObjectNode toJsonObject() {
 		Formats.DateFormatter dateFormatter = new Formats.DateFormatter(dateFormat);
@@ -89,6 +110,9 @@ public class MileStone extends Model {
 			node.put(MSTONE_DUE, dateFormatter.print(dueDate, new Locale("en")));
 		}
 		node.put(MSTONE_PROJECT, project.id);
+		node.put(MSTONE_DESCR, description);
+		node.put(TASKS_OPENED, openedTasksCount());
+		node.put(TASKS_CLOSED, closedTasksCount());
 		return node;
 	}
 	

@@ -4,12 +4,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
 import org.codehaus.jackson.node.ObjectNode;
@@ -29,8 +31,9 @@ public class Task extends Model {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	public long id;
-	public long taskNumber;
+	public Long taskNumber;
 	public String name;
+	@Column(columnDefinition="TEXT")
 	public String description;
 	@Enumerated
 	public Priority priority;
@@ -49,6 +52,8 @@ public class Task extends Model {
 	@Enumerated
 	@NotNull
 	public TaskStatus taskStatus;
+	@OneToMany(mappedBy="task")
+	public List<HistoryEvent> historyEvents;
 
 	@Transient
 	public static final String TASK_ID = "id";
@@ -105,7 +110,7 @@ public class Task extends Model {
 		if(tasks.size() > 0) {
 			taskNumber = tasks.get(0).taskNumber + 1;
 		} else {
-			taskNumber = 1;
+			taskNumber = 1l;
 		}
 	}
 

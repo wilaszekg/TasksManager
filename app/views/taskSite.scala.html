@@ -10,22 +10,68 @@
     
 <h3>[@task.taskNumber] @task.name</h3>
 
-<h5>Description: @task.description</h5>
-<h5>Priority: @task.priority</h5>
-<h5>Type of task: @task.taskKind</h5>
-<h5>Created: @task.creationDate</h5>
-<h5>Due date: @task.dueDate</h5>
-<h5>Created by: @task.creator.login</h5>
-<h5>Assigned to: @if(task.assignee != null) { @task.assignee.login } else {-}</h5>
-@if(task.mileStone != null) { <h5>Mile stone: @task.mileStone.name</h5> }
-<h5>Status: @task.taskStatus</h5>
-@if(task.taskStatus == TaskStatus.OPENED) {
-	<a class="btn btn-success btn-large">
-		Close
-	</a>
-} else {
-	<a class="btn btn-danger btn-large">
-		Reopen
-	</a>
+<hr>
+
+<div class="row">
+	<div class="span8">
+		<h5>Description: @task.description</h5>
+	</div>
+	
+	<div class="span4">
+		<h5>Priority: @task.priority</h5>
+		<h5>Type of task: @task.taskKind</h5>
+		<h5>Created: @task.creationDate</h5>
+		<h5>Due date: @task.dueDate</h5>
+		<h5>Created by: @task.creator.login</h5>
+		<h5>Assigned to: @if(task.assignee != null) { @task.assignee.login } else {-}</h5>
+		@if(task.mileStone != null) { <h5>Mile stone: @task.mileStone.name</h5> }
+		<h5>Status: @task.taskStatus</h5>
+		@if(task.taskStatus == TaskStatus.OPENED) {
+			<a class="btn btn-success btn-large" href="@routes.Tasks.closeTask(task.project.id, task.id)">
+				Close
+			</a>
+		} else {
+			<a class="btn btn-danger btn-large" href="@routes.Tasks.reopenTask(task.project.id, task.id)">
+				Reopen
+			</a>
+		}
+	</div>
+
+</div>
+<hr>
+
+<div class="row">
+	
+	<div class="span6">
+	<h4>History</h4>
+	@for(event <- task.historyEvents.reverse) {
+		@if(event.user != null) {
+			<h6>@event.user.login <small>@event.date</small></h6>
+		}
+		@if(event.changeTo != null) {
+			<h5><i class="icon-refresh"></i>@event.changeTo</h5>
+			
+		} else {
+			<p>@event.comment</p>
+		}
+		<hr>
+	}
+	</div>
+	<div class="span5">
+	@helper.form(routes.Tasks.commentTask(task.project.id, task.id), 'class ->"form-horizontal") {
+			<fieldset>
+				<div class="control-group">
+					<textarea rows="10" cols="1000" id="comment" name="comment" style="width: 100%"></textarea>
+				</div>
+				<div class="control-group">
+					<button class="btn btn-large btn-primary" type="submit">Comment</button>
+				</div>
+				
+			</fieldset>
+
+	}
+	</div>
+</div>
+
 }
-}
+
