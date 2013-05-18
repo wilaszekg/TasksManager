@@ -22,10 +22,11 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
+import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 
 @Security.Authenticated(Secured.class)
-@Restrict("CONTRIBUTOR")
+@Restrict(@Group("CONTRIBUTOR"))
 public class Tasks extends Controller {
 
 	private static final String JTABLE_RECORDS = "Records";

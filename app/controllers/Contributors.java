@@ -15,6 +15,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import play.mvc.Security;
 import security.Secured;
+import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 
 @Security.Authenticated(Secured.class)
@@ -31,12 +32,12 @@ public class Contributors extends Controller {
 
 	static Form<Contributor> form = Form.form(Contributor.class);
 
-	@Restrict("CONTRIBUTOR")
+	@Restrict(@Group("CONTRIBUTOR"))
 	public static Result contributors(long projectId) {
 		return ok(views.html.contributors.render(Project.findById(projectId)));
 	}
 
-	@Restrict("CONTRIBUTOR")
+	@Restrict(@Group("CONTRIBUTOR"))
 	public static Result list(long projectId) {
 		List<Contributor> list = Project.findById(projectId).contributors;
 		ObjectNode result = getJsonResultOK();
@@ -60,7 +61,7 @@ public class Contributors extends Controller {
 		return result;
 	}
 
-	@Restrict("ADMIN")
+	@Restrict(@Group("ADMIN"))
 	public static Result create(long projectId) {
 		Form<Contributor> filledForm = form.bindFromRequest();
 		if(filledForm.hasErrors()) {
@@ -97,7 +98,7 @@ public class Contributors extends Controller {
 		return contributor;
 	}
 
-	@Restrict("ADMIN")
+	@Restrict(@Group("ADMIN"))
 	public static Result update(long projectId) {
 		Contributor updatedContributor = getContributorFromForm();
 		Contributor persistedContributor = Contributor.findById(updatedContributor.id);
@@ -108,7 +109,7 @@ public class Contributors extends Controller {
 		return ok(getJsonResultOK());
 	}
 
-	@Restrict("ADMIN")
+	@Restrict(@Group("ADMIN"))
 	public static Result delete(long projectId) {
 		Contributor deletedContributor = getContributorFromForm();
 		Contributor persistedContributor = Contributor.findById(deletedContributor.id);

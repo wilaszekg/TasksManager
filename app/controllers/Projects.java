@@ -1,5 +1,6 @@
 package controllers;
 
+import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 import models.Contributor;
 import models.Project;
@@ -23,7 +24,7 @@ public class Projects extends Controller {
 		return ok(projects.render(Form.form(Project.class), user.ownedProjects, user.contributedProjects()));
 	}
 	
-	@Restrict("CONTRIBUTOR")
+	@Restrict(@Group("CONTRIBUTOR"))
 	public static Result mileStones(long projectId) {
 		return ok(milestones.render(Project.findById(projectId)));
 	}
@@ -60,7 +61,7 @@ public class Projects extends Controller {
 		
 	}
 	
-	@Restrict("CONTRIBUTOR")
+	@Restrict(@Group("CONTRIBUTOR"))
 	public static Result projectMain(long id) {
 		return redirect(routes.Tasks.tasks(id));
 	}

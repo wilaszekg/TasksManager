@@ -9,6 +9,7 @@ import models.Project;
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
 
+import be.objectify.deadbolt.java.actions.Group;
 import be.objectify.deadbolt.java.actions.Restrict;
 
 import play.Logger;
@@ -21,7 +22,7 @@ import security.Secured;
 import views.html.milestoneSite;
 
 @Security.Authenticated(Secured.class)
-@Restrict("CONTRIBUTOR")
+@Restrict(@Group("CONTRIBUTOR"))
 public class MileStones extends Controller{
 	
 
