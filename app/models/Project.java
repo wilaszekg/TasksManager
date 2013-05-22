@@ -56,6 +56,15 @@ public class Project extends Model {
 		return find.byId(id);
 	}
 
+	public List<Contributor> activeContributors() {
+		return Contributor.find.where().eq("project", this)
+				.in("role", Role.ADMIN, Role.CONTRIBUTOR).findList();
+	}
+
+	public Contributor contributorByUser(User user) {
+		return Contributor.find.where().eq("project", this).eq("user", user).findUnique();
+	}
+
 	public List<Task> allTasks(String mileStoneId, String statusId,
 			String contributorId, String priorityId, String taskTypeId,
 			String creatorId, String sorting) {

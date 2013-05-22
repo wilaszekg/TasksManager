@@ -10,6 +10,7 @@ import models.Project;
 import models.Task;
 import models.TaskStatus;
 import models.User;
+import models.WorkReport;
 
 import org.codehaus.jackson.node.ArrayNode;
 import org.codehaus.jackson.node.ObjectNode;
@@ -38,6 +39,7 @@ public class Tasks extends Controller {
 	private static final String JTABLE_OPTIONS = "Options";
 
 	static Form<Task> form = Form.form(Task.class);
+	static Form<WorkReport> hoursForm = Form.form(WorkReport.class);
 
 	public static Result tasks(long projectId) {
 		return ok(views.html.tasks.render(Project.findById(projectId)));
@@ -154,7 +156,8 @@ public class Tasks extends Controller {
 
 		options.add(nodeUnassigned);
 
-		for (Contributor contributor : Project.findById(projectId).contributors) {
+		for (Contributor contributor : Project.findById(projectId)
+				.activeContributors()) {
 			options.add(contributor.user.asJsonOption());
 		}
 		return ok(result);
@@ -162,7 +165,7 @@ public class Tasks extends Controller {
 
 	public static Result taskSite(long projectId, long taskId) {
 		Task task = Task.findByTaskNumber(projectId, taskId);
-		if(task.project.id != projectId) {
+		if (task.project.id != projectId) {
 			return forbidden("This task does not belong to this project.");
 		}
 		if (task == null) {
@@ -174,40 +177,40 @@ public class Tasks extends Controller {
 	@Transactional
 	public static Result closeTask(long projectId, long taskId) {
 		Task task = Task.findByTaskNumber(projectId, taskId);
-		if(task.project.id != projectId) {
+		if (task.project.id != projectId) {
 			return forbidden("This task does not belong to this project.");
 		}
-		if(task.taskStatus == TaskStatus.CLOSED) {
+		if (task.taskStatus == TaskStatus.CLOSED) {
 			return ok(views.html.taskSite.render(task));
 		}
 		HistoryEvent historyEvent = newHistoryEvent(task);
 		historyEvent.changeTo = TaskStatus.CLOSED;
-		
+
 		historyEvent.save();
-		
+
 		task.taskStatus = TaskStatus.CLOSED;
 		task.update();
-		
+
 		return ok(views.html.taskSite.render(task));
 	}
 
 	@Transactional
 	public static Result reopenTask(long projectId, long taskId) {
 		Task task = Task.findByTaskNumber(projectId, taskId);
-		if(task.project.id != projectId) {
+		if (task.project.id != projectId) {
 			return forbidden("This task does not belong to this project.");
 		}
-		if(task.taskStatus == TaskStatus.OPENED) {
+		if (task.taskStatus == TaskStatus.OPENED) {
 			return ok(views.html.taskSite.render(task));
 		}
 		HistoryEvent historyEvent = newHistoryEvent(task);
 		historyEvent.changeTo = TaskStatus.OPENED;
-		
+
 		historyEvent.save();
-		
+
 		task.taskStatus = TaskStatus.OPENED;
 		task.update();
-		
+
 		return ok(views.html.taskSite.render(task));
 	}
 
@@ -215,27 +218,61 @@ public class Tasks extends Controller {
 		Task task = Task.findByTaskNumber(projectId, taskId);
 		DynamicForm commentForm = Form.form().bindFromRequest();
 		String comment = commentForm.get("comment");
-		if(comment == null || comment.trim().equals("")) {
+		if (comment == null || comment.trim().equals("")) {
 			// TODO: intorm about reject
 			return badRequest(views.html.taskSite.render(task));
 		}
-		if(task.project.id != projectId) {
+		if (task.project.id != projectId) {
 			return forbidden("This task does not belong to this project.");
 		}
 		HistoryEvent historyEvent = newHistoryEvent(task);
 		historyEvent.comment = comment;
-		
+
 		historyEvent.save();
-		
-		return ok(views.html.taskSite.render(task));
+
+		return redirect(routes.Tasks.taskSite(projectId, taskId));
 	}
-	
+
+	public static Result listWorkReports(long projectId, long taskId) {
+		Task task = Task.findByTaskNumber(projectId, taskId);
+		if (task.project.id != projectId) {
+			return ok(getJsonResultERROR("This task does not belong to this project."));
+		}
+
+		ObjectNode result = getJsonResultOK();
+		ArrayNode records = result.putArray(JTABLE_RECORDS);
+		for (WorkReport report : task.workReports) {
+			records.add(Json.toJson(report));
+		}
+		return ok(result);
+	}
+
+	public static Result reportHours(long projectId, long taskId) {
+		Task task = Task.findByTaskNumber(projectId, taskId);
+		if (task.project.id != projectId) {
+			return ok(getJsonResultERROR("This task does not belong to this project."));
+		}
+
+		Form<WorkReport> reportForm = hoursForm.bindFromRequest();
+		if (reportForm.hasErrors()) {
+			return ok(views.html.taskSite.render(task));
+		}
+
+		WorkReport workReport = reportForm.get();
+		workReport.contributor = task.project.contributorByUser(User
+				.findByLogin(session("user")));
+		workReport.date = new Date();
+		workReport.task = task;
+		workReport.save();
+		return redirect(routes.Tasks.taskSite(projectId, taskId));
+	}
+
 	private static HistoryEvent newHistoryEvent(Task task) {
 		HistoryEvent historyEvent = new HistoryEvent();
 		historyEvent.user = User.findByLogin(session("user"));
 		historyEvent.date = new Date();
 		historyEvent.task = task;
-		
+
 		return historyEvent;
 	}
 }

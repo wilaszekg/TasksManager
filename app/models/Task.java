@@ -33,7 +33,7 @@ public class Task extends Model {
 	public long id;
 	public Long taskNumber;
 	public String name;
-	@Column(columnDefinition="TEXT")
+	@Column(columnDefinition = "TEXT")
 	public String description;
 	@Enumerated
 	public Priority priority;
@@ -52,8 +52,10 @@ public class Task extends Model {
 	@Enumerated
 	@NotNull
 	public TaskStatus taskStatus;
-	@OneToMany(mappedBy="task")
+	@OneToMany(mappedBy = "task")
 	public List<HistoryEvent> historyEvents;
+	@OneToMany(mappedBy = "task")
+	public List<WorkReport> workReports;
 
 	@Transient
 	public static final String TASK_ID = "id";
@@ -80,7 +82,7 @@ public class Task extends Model {
 	@Transient
 	public static final String TASK_STATUS = "taskStatus";
 	@Transient
-	public static final String TASK_NUMBER= "taskNumber";
+	public static final String TASK_NUMBER = "taskNumber";
 
 	public static Finder<Long, Task> find = new Finder<Long, Task>(Long.class,
 			Task.class);
@@ -100,14 +102,16 @@ public class Task extends Model {
 	public static Task findById(Long id) {
 		return find.byId(id);
 	}
-	
+
 	public static Task findByTaskNumber(long projectId, long taskNumber) {
-		return find.where().eq("project.id", projectId).eq("taskNumber", taskNumber).findUnique();
+		return find.where().eq("project.id", projectId)
+				.eq("taskNumber", taskNumber).findUnique();
 	}
-	
+
 	public void prepereTaskNumber() {
-		List<Task> tasks = find.where().setOrderBy("taskNumber DESC").findList();
-		if(tasks.size() > 0) {
+		List<Task> tasks = find.where().eq("project", project)
+				.setOrderBy("taskNumber DESC").findList();
+		if (tasks.size() > 0) {
 			taskNumber = tasks.get(0).taskNumber + 1;
 		} else {
 			taskNumber = 1l;
@@ -123,21 +127,27 @@ public class Task extends Model {
 		node.put(TASK_DESCR, description);
 		node.put(TASK_PRIORITY, priority.name());
 		node.put(TASK_KIND, taskKind.name());
-		
-		node.put(TASK_CREATED, creationDate == null ? "" : dateFormatter.print(creationDate, new Locale("en")));
-		node.put(TASK_DUE, dueDate == null ? "" : dateFormatter.print(dueDate, new Locale("en")));
-		
+
+		node.put(
+				TASK_CREATED,
+				creationDate == null ? "" : dateFormatter.print(creationDate,
+						new Locale("en")));
+		node.put(
+				TASK_DUE,
+				dueDate == null ? "" : dateFormatter.print(dueDate, new Locale(
+						"en")));
+
 		if (mileStone == null) {
 			node.put(TASK_MSTONE, "");
 		} else {
 			node.put(TASK_MSTONE, mileStone.id);
 		}
-		
+
 		node.put(TASK_CREATOR, creator == null ? "" : creator.login);
 		node.put(TASK_ASSIGNEE, assignee == null ? "" : assignee.login);
 		node.put(TASK_STATUS, taskStatus.name());
 		node.put(TASK_NUMBER, taskNumber);
-		
+
 		return node;
 	}
 }

@@ -1,6 +1,6 @@
 @(task: Task)
 
-@index("Tasks Manager") {
+@index("Tasks Manager", scripts = jtableScript) {
 
 <ul class="pager">
     <li class="previous">
@@ -28,11 +28,11 @@
 		@if(task.mileStone != null) { <h5>Mile stone: @task.mileStone.name</h5> }
 		<h5>Status: @task.taskStatus</h5>
 		@if(task.taskStatus == TaskStatus.OPENED) {
-			<a class="btn btn-success btn-large" href="@routes.Tasks.closeTask(task.project.id, task.id)">
+			<a class="btn btn-success btn-large" href="@routes.Tasks.closeTask(task.project.id, task.taskNumber)">
 				Close
 			</a>
 		} else {
-			<a class="btn btn-danger btn-large" href="@routes.Tasks.reopenTask(task.project.id, task.id)">
+			<a class="btn btn-danger btn-large" href="@routes.Tasks.reopenTask(task.project.id, task.taskNumber)">
 				Reopen
 			</a>
 		}
@@ -59,7 +59,7 @@
 	}
 	</div>
 	<div class="span5">
-	@helper.form(routes.Tasks.commentTask(task.project.id, task.id), 'class ->"form-horizontal") {
+	@helper.form(routes.Tasks.commentTask(task.project.id, task.taskNumber), 'class ->"form-horizontal") {
 			<fieldset>
 				<div class="control-group">
 					<textarea rows="10" cols="1000" id="comment" name="comment" style="width: 100%"></textarea>
@@ -71,8 +71,48 @@
 			</fieldset>
 
 	}
+	<hr>
+	@helper.form(routes.Tasks.reportHours(task.project.id, task.taskNumber), 'class ->"form-inline") {
+			<fieldset>
+					<input type="text" rows="1" cols="10" id="hoursCount" name="hoursCount"></textarea>
+				
+					<button class="btn btn-small btn-info" type="submit">Report work hours</button>
+			</fieldset>
+
+	}
+	<div id="HoursTableContainer"></div>
 	</div>
 </div>
+
+}
+
+@jtableScript = {
+<script type="text/javascript">
+        $(document).ready(function () {
+            $('#HoursTableContainer').jtable({
+                title: 'Reported Work Hours',
+                actions: {
+                    listAction: '@routes.Tasks.listWorkReports(task.project.id, task.taskNumber)'
+                },
+                fields: {
+                    contributor: {
+                        title: 'Contributor'
+                    },
+                    hoursCount: {
+                        title: 'Hours of work'
+                    },
+                    date: {
+                        title: 'Date',
+                        type: 'date'
+                    },
+                }
+            });
+            $('#HoursTableContainer').jtable('load');
+        });
+
+
+
+</script>
 
 }
 

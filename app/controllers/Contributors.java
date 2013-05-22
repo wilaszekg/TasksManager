@@ -116,8 +116,8 @@ public class Contributors extends Controller {
 		if(persistedContributor.project.owner == persistedContributor.user) {
 			return ok(getJsonResultERROR("This is the owner of this project and will be forever."));
 		}
-		long id = deletedContributor.id;
-		Contributor.remove(id);
+		persistedContributor.role = Role.DELETED;
+		persistedContributor.update();
 		return ok(getJsonResultOK());
 
 	}

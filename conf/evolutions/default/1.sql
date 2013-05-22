@@ -8,7 +8,7 @@ create table contributor (
   user_login                varchar(255),
   project_id                bigint,
   role                      integer,
-  constraint ck_contributor_role check (role in (0,1)),
+  constraint ck_contributor_role check (role in (0,1,2)),
   constraint pk_contributor primary key (id))
 ;
 
@@ -67,6 +67,15 @@ create table appUser (
   constraint pk_appUser primary key (login))
 ;
 
+create table work_report (
+  id                        bigint auto_increment not null,
+  contributor_id            bigint,
+  task_id                   bigint,
+  date                      timestamp,
+  hours_count               integer,
+  constraint pk_work_report primary key (id))
+;
+
 create sequence project_seq;
 
 create sequence appUser_seq;
@@ -91,6 +100,10 @@ alter table task add constraint fk_task_mileStone_9 foreign key (mile_stone_id) 
 create index ix_task_mileStone_9 on task (mile_stone_id);
 alter table task add constraint fk_task_project_10 foreign key (project_id) references project (id) on delete restrict on update restrict;
 create index ix_task_project_10 on task (project_id);
+alter table work_report add constraint fk_work_report_contributor_11 foreign key (contributor_id) references contributor (id) on delete restrict on update restrict;
+create index ix_work_report_contributor_11 on work_report (contributor_id);
+alter table work_report add constraint fk_work_report_task_12 foreign key (task_id) references task (id) on delete restrict on update restrict;
+create index ix_work_report_task_12 on work_report (task_id);
 
 
 
@@ -109,6 +122,8 @@ drop table if exists project;
 drop table if exists task;
 
 drop table if exists appUser;
+
+drop table if exists work_report;
 
 SET REFERENTIAL_INTEGRITY TRUE;
 
