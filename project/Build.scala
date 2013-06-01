@@ -12,7 +12,9 @@ object ApplicationBuild extends Build {
     javaCore,
     javaJdbc,
     javaEbean,
-    "be.objectify" %% "deadbolt-java" % "2.1-RC2"
+    "be.objectify" %% "deadbolt-java" % "2.1-RC2",
+    "org.powermock" % "powermock-module-junit4" % "1.5",
+    "org.seleniumhq.selenium" % "selenium-java" % "2.32.0" % "test"
   )
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
