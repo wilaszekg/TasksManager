@@ -14,6 +14,7 @@ object ApplicationBuild extends Build {
     javaEbean,
     "be.objectify" %% "deadbolt-java" % "2.1-RC2",
     "org.powermock" % "powermock-module-junit4" % "1.5",
+    "org.powermock" % "powermock-api-mockito" % "1.5",
     "org.seleniumhq.selenium" % "selenium-java" % "2.32.0" % "test"
   )
 
