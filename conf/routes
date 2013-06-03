@@ -59,3 +59,5 @@ POST		/projects/:id/tasks/:tid/report		controllers.Tasks.reportHours(id: Long, t
 # Mile Stone
 GET			/projects/:id/milestones/:mid		controllers.MileStones.mileStoneSite(id: Long, mid: Long)
 
+# Charts
+GET			/projects/:id/tasks/:tid/chart		controllers.TaskContributionCharts.contributionDates(id: Long, tid: Long)

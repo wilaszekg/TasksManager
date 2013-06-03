@@ -4,7 +4,7 @@
 # --- !Ups
 
 create table contributor (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   user_login                varchar(255),
   project_id                bigint,
   role                      integer,
@@ -13,7 +13,7 @@ create table contributor (
 ;
 
 create table history_event (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   comment                   TEXT,
   change_to                 integer,
   user_login                varchar(255),
@@ -24,7 +24,7 @@ create table history_event (
 ;
 
 create table mile_stone (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   name                      varchar(255),
   description               TEXT,
   creation_date             timestamp,
@@ -42,7 +42,7 @@ create table project (
 ;
 
 create table task (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   task_number               bigint,
   name                      varchar(255),
   description               TEXT,
@@ -63,12 +63,12 @@ create table task (
 
 create table appUser (
   login                     varchar(255) not null,
-  password                  varbinary(255),
+  password                  bytea,
   constraint pk_appUser primary key (login))
 ;
 
 create table work_report (
-  id                        bigint auto_increment not null,
+  id                        bigint not null,
   contributor_id            bigint,
   task_id                   bigint,
   date                      timestamp,
@@ -76,58 +76,74 @@ create table work_report (
   constraint pk_work_report primary key (id))
 ;
 
+create sequence contributor_seq;
+
+create sequence history_event_seq;
+
+create sequence mile_stone_seq;
+
 create sequence project_seq;
+
+create sequence task_seq;
 
 create sequence appUser_seq;
 
-alter table contributor add constraint fk_contributor_user_1 foreign key (user_login) references appUser (login) on delete restrict on update restrict;
+create sequence work_report_seq;
+
+alter table contributor add constraint fk_contributor_user_1 foreign key (user_login) references appUser (login);
 create index ix_contributor_user_1 on contributor (user_login);
-alter table contributor add constraint fk_contributor_project_2 foreign key (project_id) references project (id) on delete restrict on update restrict;
+alter table contributor add constraint fk_contributor_project_2 foreign key (project_id) references project (id);
 create index ix_contributor_project_2 on contributor (project_id);
-alter table history_event add constraint fk_history_event_user_3 foreign key (user_login) references appUser (login) on delete restrict on update restrict;
+alter table history_event add constraint fk_history_event_user_3 foreign key (user_login) references appUser (login);
 create index ix_history_event_user_3 on history_event (user_login);
-alter table history_event add constraint fk_history_event_task_4 foreign key (task_id) references task (id) on delete restrict on update restrict;
+alter table history_event add constraint fk_history_event_task_4 foreign key (task_id) references task (id);
 create index ix_history_event_task_4 on history_event (task_id);
-alter table mile_stone add constraint fk_mile_stone_project_5 foreign key (project_id) references project (id) on delete restrict on update restrict;
+alter table mile_stone add constraint fk_mile_stone_project_5 foreign key (project_id) references project (id);
 create index ix_mile_stone_project_5 on mile_stone (project_id);
-alter table project add constraint fk_project_owner_6 foreign key (owner_login) references appUser (login) on delete restrict on update restrict;
+alter table project add constraint fk_project_owner_6 foreign key (owner_login) references appUser (login);
 create index ix_project_owner_6 on project (owner_login);
-alter table task add constraint fk_task_creator_7 foreign key (creator_login) references appUser (login) on delete restrict on update restrict;
+alter table task add constraint fk_task_creator_7 foreign key (creator_login) references appUser (login);
 create index ix_task_creator_7 on task (creator_login);
-alter table task add constraint fk_task_assignee_8 foreign key (assignee_login) references appUser (login) on delete restrict on update restrict;
+alter table task add constraint fk_task_assignee_8 foreign key (assignee_login) references appUser (login);
 create index ix_task_assignee_8 on task (assignee_login);
-alter table task add constraint fk_task_mileStone_9 foreign key (mile_stone_id) references mile_stone (id) on delete restrict on update restrict;
+alter table task add constraint fk_task_mileStone_9 foreign key (mile_stone_id) references mile_stone (id);
 create index ix_task_mileStone_9 on task (mile_stone_id);
-alter table task add constraint fk_task_project_10 foreign key (project_id) references project (id) on delete restrict on update restrict;
+alter table task add constraint fk_task_project_10 foreign key (project_id) references project (id);
 create index ix_task_project_10 on task (project_id);
-alter table work_report add constraint fk_work_report_contributor_11 foreign key (contributor_id) references contributor (id) on delete restrict on update restrict;
+alter table work_report add constraint fk_work_report_contributor_11 foreign key (contributor_id) references contributor (id);
 create index ix_work_report_contributor_11 on work_report (contributor_id);
-alter table work_report add constraint fk_work_report_task_12 foreign key (task_id) references task (id) on delete restrict on update restrict;
+alter table work_report add constraint fk_work_report_task_12 foreign key (task_id) references task (id);
 create index ix_work_report_task_12 on work_report (task_id);
 
 
 
 # --- !Downs
 
-SET REFERENTIAL_INTEGRITY FALSE;
+drop table if exists contributor cascade;
 
-drop table if exists contributor;
+drop table if exists history_event cascade;
 
-drop table if exists history_event;
+drop table if exists mile_stone cascade;
 
-drop table if exists mile_stone;
+drop table if exists project cascade;
 
-drop table if exists project;
+drop table if exists task cascade;
 
-drop table if exists task;
+drop table if exists appUser cascade;
 
-drop table if exists appUser;
+drop table if exists work_report cascade;
 
-drop table if exists work_report;
+drop sequence if exists contributor_seq;
 
-SET REFERENTIAL_INTEGRITY TRUE;
+drop sequence if exists history_event_seq;
+
+drop sequence if exists mile_stone_seq;
 
 drop sequence if exists project_seq;
 
+drop sequence if exists task_seq;
+
 drop sequence if exists appUser_seq;
+
+drop sequence if exists work_report_seq;
 
