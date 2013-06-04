@@ -1,0 +1,34 @@
+@(user: User, loginform: Form[UserPanel.ResetPassword])
+
+
+@index("account") {
+
+<div class="row">
+	@helper.form(routes.UserPanel.changePassword(), 'class -> "form-signin") {
+			<fieldset>
+				<h2 class="form-signin-heading">Change password</h2>
+				@if(loginform.hasErrors) {
+					<div class="alert alert-error"> 
+					@if(loginform.error("") != null) {
+						@loginform.error("").message
+					}
+					@if(loginform.hasGlobalErrors) {
+						@loginform.globalError.message
+					} else {
+						Changing password form incorrect
+					}
+					 </div>
+				} @if(flash.contains("success")) {
+				<div class="alert alert-success">@flash.get("success")</div>
+				} 
+				@helper.inputPassword(loginform("password"), 'class ->
+				"input-block-level", '_label -> "", 'placeholder -> "Password")
+				@helper.inputPassword(loginform("confPassword"), 'class ->
+				"input-block-level", '_label -> "", 'placeholder -> "Confirm Password")
+				<button class="btn btn-large btn-primary" type="submit">Change</button>
+			</fieldset>
+
+			}
+</div>
+
+}

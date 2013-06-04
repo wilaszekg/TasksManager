@@ -62,3 +62,7 @@ GET			/projects/:id/milestones/:mid		controllers.MileStones.mileStoneSite(id: Lo
 # Charts
 GET			/projects/:id/tasks/:tid/chart		controllers.TaskContributionCharts.contributionDates(id: Long, tid: Long)
 GET			/projects/:id/milestones/:mid/chart	controllers.MileStonesCharts.mileStoneBurndown(id: Long, mid: Long)
+
+# User Panel
+GET			/userPanel							controllers.UserPanel.panelMain()
+POST		/userPanel/changePassword			controllers.UserPanel.changePassword()

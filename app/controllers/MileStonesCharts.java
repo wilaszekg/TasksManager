@@ -27,7 +27,6 @@ public class MileStonesCharts extends Controller {
 
 	final static long milisPerDay = 1000 * 60 * 60 * 24l;
 
-	@SuppressWarnings("deprecation")
 	public static Result mileStoneBurndown(long projectId, long mileStoneId) throws ParseException {
 		MileStone mileStone = MileStone.findById(mileStoneId);
 		if (mileStone.project.id != projectId) {
@@ -50,14 +49,14 @@ public class MileStonesCharts extends Controller {
 		ObjectNode downEnd = downLine.putObject("end");
 		
 		// looking for the oldest close event
-		for (Task task : mileStone.tasks) {
+		/*for (Task task : mileStone.tasks) {
 			for (HistoryEvent historyEvent : task.historyEvents) {
 				if (historyEvent.changeTo == TaskStatus.CLOSED
 						&& historyEvent.date.compareTo(end.getTime()) > 0) {
 					end.setTime(historyEvent.date);
 				}
 			}
-		}
+		}*/
 		
 		downStart.put("year", start.get(Calendar.YEAR));
 		downStart.put("month", start.get(Calendar.MONTH));
