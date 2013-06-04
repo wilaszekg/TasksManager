@@ -1,6 +1,6 @@
 @(milestone: MileStone)
 
-@index("Tasks Manager") {
+@index("Tasks Manager", scripts = chartsScript) {
 
 <ul class="pager">
     <li class="previous">
@@ -25,4 +25,74 @@
 
 
 <hr>
+<div id="container"></div>
+}
+
+@chartsScript = {
+<script type="text/javascript">
+	$(document).ready(function () {
+		$.getJSON("@routes.MileStonesCharts.mileStoneBurndown(milestone.project.id, milestone.id)",function(json){
+			var dates = new Array();
+			json.progress.forEach(function(day) {
+				dates.push([
+					Date.UTC(day.year, day.month, day.day),
+					day.count
+				]);
+			});
+        	prepareChart(json, dates);
+        });
+       
+		
+	});
+	
+	function prepareChart(json, dates) {
+		$('#container').highcharts({
+            chart: {
+                type: 'spline'
+            },
+            title: {
+                text: 'Burndown Chart'
+            },
+            subtitle: {
+                text: 'Burndown chart of this iteration'
+            },
+            xAxis: {
+                type: 'datetime',
+                dateTimeLabelFormats: { // don't display the dummy year
+                    month: '%e. %b',
+                    year: '%b'
+                }
+            },
+            yAxis: {
+                title: {
+                    text: 'Tasks count'
+                },
+                min: 0
+            },
+            tooltip: {
+                formatter: function() {
+                        return '<b>'+ this.series.name +'</b><br/>'+
+                        Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y;
+                }
+            },
+            
+            series: [ 
+            {
+            	name: 'Tasks left',
+            	data: dates
+            },
+            {
+                name: 'Burn down',
+                // Define the data points. All series have a dummy year
+                // of 1970/71 in order to be compared on the same x axis. Note
+                // that in JavaScript, months start at 0 for January, 1 for February etc.
+                data: [
+                    [Date.UTC(json.downLine.start.year,  json.downLine.start.month, json.downLine.start.day), json.downLine.start.count  ],
+                    [Date.UTC(json.downLine.end.year,  json.downLine.end.month, json.downLine.end.day), 0 ]
+                ]
+            }]
+        });
+	}
+
+</script>
 }

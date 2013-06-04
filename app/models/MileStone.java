@@ -39,7 +39,7 @@ public class MileStone extends Model {
 	@ManyToOne
 	public Project project;
 	@OneToMany(mappedBy="mileStone")
-	List<Task> tasks;
+	public List<Task> tasks;
 	
 	
 	@Transient
